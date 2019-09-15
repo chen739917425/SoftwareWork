@@ -28,8 +28,10 @@ class Address{
 		wstring name, phone_number;
 	public:
 		void init();
+		void pick_PhoneNumber(string& s);
 		Address(string s) {
 			init();
+			pick_PhoneNumber(s);
 			adr = UTF8ToUnicode(s);
 		}
 };
@@ -48,4 +50,11 @@ void Address::init() {
 		while (fin >> s && s != "#")
 			Province[ws].push_back(UTF8ToUnicode(s));
 	}
+}
+void Address::pick_PhoneNumber(string& s) {
+	regex pattern("\\d{11}");
+	smatch result;
+	regex_search(s, result, pattern);
+	phone_number = UTF8ToUnicode(result[0]);
+	s=regex_replace(s, pattern, "");
 }
