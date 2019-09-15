@@ -28,11 +28,13 @@ class Address{
 		wstring name, phone_number;
 	public:
 		void init();
-		void pick_PhoneNumber(string& s);
+		void pick_PhoneNumber(string& s);	// 提取电话号码
+		void get_level();					// 获取地址的级数并剔除
 		Address(string s) {
 			init();
 			pick_PhoneNumber(s);
 			adr = UTF8ToUnicode(s);
+			get_level();
 		}
 };
 void Address::init() {
@@ -57,4 +59,9 @@ void Address::pick_PhoneNumber(string& s) {
 	regex_search(s, result, pattern);
 	phone_number = UTF8ToUnicode(result[0]);
 	s=regex_replace(s, pattern, "");
+}
+void Address::get_level() {
+	level = stoi(adr);
+	adr = adr.substr(2);
+	wcout << adr;
 }
