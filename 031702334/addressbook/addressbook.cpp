@@ -1,36 +1,31 @@
 #include"address.h"
-int main() {
-	chs;
-	ifstream fin("Data/1.txt");
-	string s;
-	fin >> s;
-	Address a;
-	a = s;
-	a.parse();
-	/*
-	ifstream fin("AddressData.txt");
-	ofstream fout("2.txt");
-	string s;
-	wstring ws;
-	fin >> s;
-	fout << s<<endl;
-	while (fin >> s) {
-		fout << s << endl;
-		int f = 0;
-		while (fin >> s && s[0] != '#') {
-			ws = UTF8ToUnicode(s);
-			if (ws.back() == L'ÊÐ')
-				ws.pop_back();
-			s = UnicodeToUTF8(ws);
-			if (f)
-				fout << " " << s;
-			else {
-				fout << s;
-				f = 1;
-			}
-		}
-		fout <<endl<< "#" << endl;
+string toJsonArray(vector<string>& a) {
+	string res="[";
+	for (int i = 0; i < int(a.size()); ++i) {
+		res += a[i];
+		if (i + 1 < int(a.size()))
+			res += ",";
 	}
-	*/
+	res+="]";
+	return res;
+}
+int main(int argv, char** argc)
+{
+	if (argv < 3)
+		return 0;
+	ifstream infile;
+	infile.open("1.txt");
+	ofstream outfile;
+	outfile.open("2.txt");
+	string s;
+	Address adr;
+	vector<string> res;
+	while (infile >> s) {
+		adr = s;
+		res.push_back(adr.toJson());
+	}
+	outfile << toJsonArray(res);
+	infile.close();
+	outfile.close();
 	return 0;
 }
