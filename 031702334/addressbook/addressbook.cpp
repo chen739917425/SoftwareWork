@@ -14,9 +14,9 @@ int main(int argv, char** argc)
 	if (argv < 3)
 		return 0;
 	ifstream infile;
-	infile.open("1.txt");
+	infile.open(argc[1]);
 	ofstream outfile;
-	outfile.open("2.txt");
+	outfile.open(argc[2]);
 	string s;
 	Address adr;
 	vector<string> res;
