@@ -32,6 +32,7 @@ wstring UTF8ToUnicode(const string & str){
 	return ret;
 }
 unordered_map< wstring, vector<wstring> > Province, Municipality;
+unordered_map< wstring, bool > isCity;
 class Address{
 	private:
 		wstring suf;
@@ -48,6 +49,7 @@ class Address{
 		void get_pro();						// 提取省地址
 		void get_city();					// 提取市地址
 		void parse();						// 解析地址
+		string toJson();					// 以json格式输出
 		Address() {
 			init();
 		}
@@ -61,7 +63,12 @@ class Address{
 		}
 };
 void Address::init() {
-	ifstream fin("AddressData.txt");
+	ifstream fin;
+	fin.open("AddressData.txt");
+	if (!fin.is_open()) {
+		cout << "AddressData file open failed!\nymzsb!";
+		exit(0);
+	}
 	string s;
 	wstring ws;
 	fin >> s;
@@ -77,6 +84,7 @@ void Address::init() {
 		while (fin >> s && s != "#")
 			Province[ws].push_back(UTF8ToUnicode(s));
 	}
+	fin.close();
 }
 string Address::pick_PhoneNumber(string s) {
 	regex pattern("\\d{11}");
@@ -111,7 +119,7 @@ void Address::get_pro() {
 		int pos=adr.find(i.first);
 		if (pos != adr.npos) {
 			isMunicipality = false;
-			province = adr.substr(pos, i.first.size());
+			province = i.first;
 			if (province.size() <= 3)
 				province.push_back(suf[0]);
 			if (adr[pos + i.first.size()] == suf[0])
@@ -121,26 +129,63 @@ void Address::get_pro() {
 			return;
 		}
 	}
+	isMunicipality = false;
 	province = L"";
 }
 void Address::get_city() {
 	if (isMunicipality) {
 		city = province;
-		city.push_back(suf[0]);
+		city.push_back(suf[1]);
 	}
 	else {
-		for (auto i : Province[province]) {
-			int pos = adr.find(i);
-			if (pos != adr.npos) {
-				city = adr.substr(0, i.size());
+		if (province.size()) {
+			wstring pro = province;
+			if (pro.back() == suf[0])
+				pro.pop_back();
+			for (auto i : Province[pro]) {
+				wstring tmp = i;
+				if (tmp.back() == suf[1])
+					tmp.pop_back();
+				int pos = adr.find(tmp);
+				if (pos != adr.npos) {
+					city = i;
+					if (adr[pos + tmp.size()] == suf[1])
+						adr.erase(pos, tmp.size() + 1);
+					else
+						adr.erase(pos, tmp.size());
+					return;
+				}
 			}
+			city = L"";
+		}
+		else {
+			for (auto i:Province)
+				for (auto j : i.second) {
+					wstring tmp = j;
+					if (tmp.back() == suf[1])
+						tmp.pop_back();
+					int pos = adr.find(tmp);
+					if (pos != adr.npos) {
+						city = j;
+						if (adr[pos + tmp.size()] == suf[1])
+							adr.erase(pos, tmp.size() + 1);
+						else
+							adr.erase(pos, tmp.size());
+						return;
+					}
+				}
+			city = L"";
 		}
 	}
 }
 void Address::parse() {
-	wcout << suf << endl;
 	get_level();
 	get_name();
 	get_pro();
-		wcout << level << " " << name << " " << province << " " << adr;
+	get_city();
+	wcout << level << " " << name << " " << province << " " << city << "\n" << adr;
+}
+string Address::toJson() {
+	string res;
+	return res;
 }
