@@ -1,7 +1,7 @@
 #include"address.h"
 int main() {
 	chs;
-	ifstream fin("1.txt");
+	ifstream fin("Data/1.txt");
 	string s;
 	fin >> s;
 	Address a;

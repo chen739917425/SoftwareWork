@@ -32,7 +32,6 @@ wstring UTF8ToUnicode(const string & str){
 	return ret;
 }
 unordered_map< wstring, vector<wstring> > Province, Municipality;
-unordered_map< wstring, bool > isCity;
 class Address{
 	private:
 		wstring suf;
@@ -48,6 +47,7 @@ class Address{
 		void get_name();					// 提取姓名
 		void get_pro();						// 提取省地址
 		void get_city();					// 提取市地址
+		void get_county();					// 提取区/县/县级市
 		void parse();						// 解析地址
 		string toJson();					// 以json格式输出
 		Address() {
@@ -106,7 +106,7 @@ void Address::get_name() {
 void Address::get_pro() {
 	for (auto i : Municipality) {
 		int pos = adr.find(i.first);
-		if (pos != adr.npos) {
+		if (pos != adr.npos&&pos == 0) {
 			isMunicipality = true;
 			province = adr.substr(pos, i.first.size());
 			if (adr[pos + i.first.size()] == suf[1])
@@ -117,7 +117,7 @@ void Address::get_pro() {
 	}
 	for (auto i : Province) {
 		int pos=adr.find(i.first);
-		if (pos != adr.npos) {
+		if (pos != adr.npos&&pos == 0) {
 			isMunicipality = false;
 			province = i.first;
 			if (province.size() <= 3)
@@ -147,7 +147,7 @@ void Address::get_city() {
 				if (tmp.back() == suf[1])
 					tmp.pop_back();
 				int pos = adr.find(tmp);
-				if (pos != adr.npos) {
+				if (pos != adr.npos&&pos == 0) {
 					city = i;
 					if (adr[pos + tmp.size()] == suf[1])
 						adr.erase(pos, tmp.size() + 1);
@@ -178,12 +178,24 @@ void Address::get_city() {
 		}
 	}
 }
+void Address::get_county() {
+	for (int i = 1; i <= 3; ++i) {
+		int pos = adr.find(suf[i]);
+		if (pos != adr.npos) {
+			county = adr.substr(0, pos + 1);
+			adr.erase(0, pos + 1);
+			return;
+		}
+	}
+	county = L"";
+}
 void Address::parse() {
 	get_level();
 	get_name();
 	get_pro();
 	get_city();
-	wcout << level << " " << name << " " << province << " " << city << "\n" << adr;
+	get_county();
+	wcout << level << " " << name << " " << province << " " << city << " "<<county<<"\n" << adr;
 }
 string Address::toJson() {
 	string res;
