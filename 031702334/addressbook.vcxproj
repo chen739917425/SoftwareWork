@@ -79,6 +79,10 @@
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
+<<<<<<< HEAD
+=======
+      <Profile>true</Profile>
+>>>>>>> 42559e934afc7841d287f32a25558d0093396a18
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -88,6 +92,12 @@
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
     </ClCompile>
+<<<<<<< HEAD
+=======
+    <Link>
+      <Profile>true</Profile>
+    </Link>
+>>>>>>> 42559e934afc7841d287f32a25558d0093396a18
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
